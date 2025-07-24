@@ -1,1 +1,23 @@
+from resume_parser import parse_resume
+from jd_matcher import get_similarity_score
+import os
 
+def main():
+    jd_text = open("job_description.txt", "r", encoding="utf-8").read()
+    resumes_folder = "resumes"
+    
+    results = []
+    for filename in os.listdir(resumes_folder):
+        filepath = os.path.join(resumes_folder, filename)
+        parsed_resume = parse_resume(filepath)
+        score = get_similarity_score(jd_text, parsed_resume['text'])
+        results.append((filename, score))
+
+    ranked = sorted(results, key=lambda x: x[1], reverse=True)
+
+    print("\nRanked Candidates:")
+    for name, score in ranked:
+        print(f"{name} - Score: {round(score*100, 2)}%")
+
+if __name__ == "__main__":
+    main()
